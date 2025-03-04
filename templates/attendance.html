@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Mark Attendance{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-6">
+    <!-- Header -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <h1 class="text-3xl font-bold text-gray-900 mb-4">
+            <i class="fas fa-clock text-indigo-600 mr-2"></i>
+            Mark Attendance
+        </h1>
+        <p class="text-gray-600">Use face recognition to mark your attendance.</p>
+    </div>
+
+    <!-- Camera Section -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <div class="space-y-6">
+            <!-- Camera Feed -->
+            <div class="relative aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                <video id="video" class="absolute inset-0 w-full h-full object-cover" autoplay playsinline></video>
+                <canvas id="canvas" class="hidden absolute inset-0 w-full h-full"></canvas>
+                
+                <!-- Face Detection Overlay -->
+                <div id="faceOverlay" class="hidden absolute inset-0">
+                    <div class="flex items-center justify-center h-full">
+                        <div class="w-48 h-48 border-4 border-green-500 rounded-full animate-pulse"></div>
+                    </div>
+                </div>
+
+                <!-- Loading Overlay -->
+                <div id="loadingOverlay" class="hidden absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                    <div class="text-white text-center">
+                        <i class="fas fa-spinner fa-spin fa-3x mb-2"></i>
+                        <p>Processing...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="flex justify-center space-x-4">
+                <button type="button" id="captureBtn"
+                        class="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <i class="fas fa-camera mr-2"></i>
+                    Mark Attendance
+                </button>
+                <button type="button" id="retakeBtn"
+                        class="hidden inline-flex items-center px-6 py-3 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <i class="fas fa-redo mr-2"></i>
+                    Try Again
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Section -->
+    <div id="statusContainer" class="hidden bg-white shadow rounded-lg p-6">
+        <div id="successStatus" class="hidden">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-check-circle text-green-500 text-3xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-medium text-gray-900">Attendance Marked Successfully</h3>
+                    <p class="text-gray-500" id="employeeName"></p>
+                    <p class="text-sm text-gray-500" id="attendanceType"></p>
+                    <p class="text-sm text-gray-500" id="timestamp"></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="errorStatus" class="hidden">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-exclamation-circle text-red-500 text-3xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-medium text-gray-900">Unable to Mark Attendance</h3>
+                    <p class="text-gray-500" id="errorMessage"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const captureBtn = document.getElementById('captureBtn');
+    const retakeBtn = document.getElementById('retakeBtn');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const statusContainer = document.getElementById('statusContainer');
+    const successStatus = document.getElementById('successStatus');
+    const errorStatus = document.getElementById('errorStatus');
+    const employeeName = document.getElementById('employeeName');
+    const attendanceType = document.getElementById('attendanceType');
+    const errorMessage = document.getElementById('errorMessage');
+    const timestamp = document.getElementById('timestamp');
+    let stream = null;
+
+    // Access webcam
+    async function startCamera() {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+            video.style.display = 'block';
+            canvas.style.display = 'none';
+            captureBtn.style.display = 'inline-flex';
+            retakeBtn.style.display = 'none';
+            statusContainer.style.display = 'none';
+        } catch (err) {
+            showError('Error accessing camera: ' + err.message);
+        }
+    }
+
+    // Start camera when page loads
+    startCamera();
+
+    // Show success status
+    function showSuccess(name, type, time) {
+        statusContainer.style.display = 'block';
+        successStatus.style.display = 'block';
+        errorStatus.style.display = 'none';
+        employeeName.textContent = name;
+        
+        // Set attendance type message
+        if (type === 'check_in') {
+            attendanceType.textContent = 'Checked In';
+            attendanceType.className = 'text-sm text-green-600 font-semibold';
+        } else if (type === 'check_out') {
+            attendanceType.textContent = 'Checked Out';
+            attendanceType.className = 'text-sm text-blue-600 font-semibold';
+        } else {
+            attendanceType.textContent = 'Attendance already marked for today';
+            attendanceType.className = 'text-sm text-yellow-600 font-semibold';
+        }
+        
+        timestamp.textContent = time;
+    }
+
+    // Show error status
+    function showError(message) {
+        statusContainer.style.display = 'block';
+        successStatus.style.display = 'none';
+        errorStatus.style.display = 'block';
+        errorMessage.textContent = message;
+    }
+
+    // Capture photo and mark attendance
+    captureBtn.addEventListener('click', async function() {
+        loadingOverlay.style.display = 'flex';
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        
+        const imageData = canvas.toDataURL('image/jpeg');
+        
+        try {
+            const formData = new FormData();
+            formData.append('image_data', imageData);
+            
+            const response = await fetch('/mark-attendance', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showSuccess(
+                    result.employee_name,
+                    result.attendance_type,
+                    new Date(result.timestamp).toLocaleString()
+                );
+                video.style.display = 'none';
+                canvas.style.display = 'block';
+                captureBtn.style.display = 'none';
+                retakeBtn.style.display = 'inline-flex';
+            } else {
+                showError(result.message);
+            }
+        } catch (err) {
+            showError('Error marking attendance: ' + err.message);
+        } finally {
+            loadingOverlay.style.display = 'none';
+        }
+    });
+
+    // Retake photo
+    retakeBtn.addEventListener('click', function() {
+        startCamera();
+    });
+
+    // Clean up when leaving page
+    window.addEventListener('beforeunload', function() {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+    });
+});
+</script>
+{% endblock %}
