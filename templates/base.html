@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} - Face Recognition Attendance System</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <!-- Logo -->
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="{{ url_for('index') }}" class="text-xl font-bold text-indigo-600">
+                            <i class="fas fa-id-card mr-2"></i>
+                            FR Attendance
+                        </a>
+                    </div>
+
+                    <!-- Navigation Links -->
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="{{ url_for('index') }}" 
+                           class="{% if request.endpoint == 'index' %}border-indigo-500 text-gray-900{% else %}border-transparent text-gray-500{% endif %} hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <i class="fas fa-home mr-1"></i>
+                            Dashboard
+                        </a>
+                        <a href="{{ url_for('enroll') }}"
+                           class="{% if request.endpoint == 'enroll' %}border-indigo-500 text-gray-900{% else %}border-transparent text-gray-500{% endif %} hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <i class="fas fa-user-plus mr-1"></i>
+                            Enroll
+                        </a>
+                        <a href="{{ url_for('mark_attendance') }}"
+                           class="{% if request.endpoint == 'mark_attendance' %}border-indigo-500 text-gray-900{% else %}border-transparent text-gray-500{% endif %} hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <i class="fas fa-clock mr-1"></i>
+                            Mark Attendance
+                        </a>
+                        <a href="{{ url_for('view_attendance') }}"
+                           class="{% if request.endpoint == 'view_attendance' %}border-indigo-500 text-gray-900{% else %}border-transparent text-gray-500{% endif %} hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <i class="fas fa-list mr-1"></i>
+                            View Records
+                        </a>
+                        <a href="{{ url_for('manage_users') }}"
+                           class="{% if request.endpoint == 'manage_users' %}border-indigo-500 text-gray-900{% else %}border-transparent text-gray-500{% endif %} hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <i class="fas fa-users mr-1"></i>
+                            Manage Users
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div class="sm:hidden" id="mobile-menu">
+            <div class="pt-2 pb-3 space-y-1">
+                <a href="{{ url_for('index') }}"
+                   class="{% if request.endpoint == 'index' %}bg-indigo-50 border-indigo-500 text-indigo-700{% else %}border-transparent text-gray-500{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    <i class="fas fa-home mr-1"></i>
+                    Dashboard
+                </a>
+                <a href="{{ url_for('enroll') }}"
+                   class="{% if request.endpoint == 'enroll' %}bg-indigo-50 border-indigo-500 text-indigo-700{% else %}border-transparent text-gray-500{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    <i class="fas fa-user-plus mr-1"></i>
+                    Enroll
+                </a>
+                <a href="{{ url_for('mark_attendance') }}"
+                   class="{% if request.endpoint == 'mark_attendance' %}bg-indigo-50 border-indigo-500 text-indigo-700{% else %}border-transparent text-gray-500{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    <i class="fas fa-clock mr-1"></i>
+                    Mark Attendance
+                </a>
+                <a href="{{ url_for('view_attendance') }}"
+                   class="{% if request.endpoint == 'view_attendance' %}bg-indigo-50 border-indigo-500 text-indigo-700{% else %}border-transparent text-gray-500{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    <i class="fas fa-list mr-1"></i>
+                    View Records
+                </a>
+                <a href="{{ url_for('manage_users') }}"
+                   class="{% if request.endpoint == 'manage_users' %}bg-indigo-50 border-indigo-500 text-indigo-700{% else %}border-transparent text-gray-500{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    <i class="fas fa-users mr-1"></i>
+                    Manage Users
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Scripts -->
+    {% block scripts %}{% endblock %}
+</body>
+</html>
