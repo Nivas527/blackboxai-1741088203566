@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Welcome Section -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <h1 class="text-3xl font-bold text-gray-900 mb-4">
+            <i class="fas fa-tachometer-alt text-indigo-600 mr-2"></i>
+            Dashboard
+        </h1>
+        <p class="text-gray-600">Welcome to the Face Recognition Attendance System. Choose an action below to get started.</p>
+    </div>
+
+    <!-- Quick Actions Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Enroll Card -->
+        <a href="{{ url_for('enroll') }}" class="bg-white shadow rounded-lg p-6 hover:shadow-lg transition duration-300 transform hover:-translate-y-1">
+            <div class="flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-lg mb-4">
+                <i class="fas fa-user-plus text-2xl text-indigo-600"></i>
+            </div>
+            <h2 class="text-xl font-semibold text-gray-900 mb-2">Enroll Employee</h2>
+            <p class="text-gray-600">Register new employees with their face data.</p>
+        </a>
+
+        <!-- Mark Attendance Card -->
+        <a href="{{ url_for('mark_attendance') }}" class="bg-white shadow rounded-lg p-6 hover:shadow-lg transition duration-300 transform hover:-translate-y-1">
+            <div class="flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg mb-4">
+                <i class="fas fa-clock text-2xl text-green-600"></i>
+            </div>
+            <h2 class="text-xl font-semibold text-gray-900 mb-2">Mark Attendance</h2>
+            <p class="text-gray-600">Record attendance using face recognition.</p>
+        </a>
+
+        <!-- View Records Card -->
+        <a href="{{ url_for('view_attendance') }}" class="bg-white shadow rounded-lg p-6 hover:shadow-lg transition duration-300 transform hover:-translate-y-1">
+            <div class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mb-4">
+                <i class="fas fa-list text-2xl text-blue-600"></i>
+            </div>
+            <h2 class="text-xl font-semibold text-gray-900 mb-2">View Records</h2>
+            <p class="text-gray-600">Check attendance records and reports.</p>
+        </a>
+    </div>
+
+    <!-- System Status -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+            <i class="fas fa-info-circle text-blue-600 mr-2"></i>
+            System Status
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="p-4 bg-gray-50 rounded-lg">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-database text-gray-400"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-gray-900">Database Status</h3>
+                        <p class="text-sm text-gray-500">Connected</p>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-lg">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-camera text-gray-400"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-gray-900">Face Recognition</h3>
+                        <p class="text-sm text-gray-500">Active</p>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-lg">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-clock text-gray-400"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-gray-900">Last Update</h3>
+                        <p class="text-sm text-gray-500">{{ now.strftime('%Y-%m-%d %H:%M') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
